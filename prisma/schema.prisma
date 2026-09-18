@@ -1,0 +1,123 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum LeadSource {
+  WALK_IN
+  REFERRAL
+  WEBSITE
+  PHONE_ENQUIRY
+  SOCIAL_MEDIA
+  SOCIAL_MEDIA_AD
+  OTHER
+}
+
+enum PreferredContactMethod {
+  PHONE
+  EMAIL
+  TEXT_SMS
+  WHATSAPP
+}
+
+enum DealStage {
+  LEAD
+  CONTACTED
+  FIND_CAR
+  PROPOSAL_SUBMITTED
+  PROPOSAL_ACCEPTED
+  COMPLETED_LOST
+}
+
+enum Outcome {
+  PENDING
+  YES
+  NO
+}
+
+enum AdditionalProductType {
+  WARRANTY_2YR
+  WARRANTY_3YR
+  SHINE_PROTECT_1YR
+  SHINE_PROTECT_2YR
+}
+
+model Contact {
+  id                     String                   @id @default(cuid())
+  firstName              String
+  lastName               String?
+  phone                  String?
+  email                  String?
+  address                String?
+  leadSource             LeadSource?
+  preferredContactMethod PreferredContactMethod?
+  notes                  String?
+  lastContactDate        DateTime?
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  deals                  Deal[]
+
+  @@index([lastName, firstName])
+  @@index([email])
+}
+
+model Deal {
+  id        String  @id @default(cuid())
+  contactId String
+  contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  stage DealStage @default(LEAD)
+
+  findCarOutcome          Outcome @default(PENDING)
+  proposalAcceptedOutcome Outcome @default(PENDING)
+  completedLostOutcome    Outcome @default(PENDING)
+
+  commissionReceived Decimal?
+  commissionPercent  Decimal?
+  completedAt         DateTime?
+  lostAt               DateTime?
+  lender               String?
+
+  carsInterested String?
+
+  finalMake         String?
+  finalModel        String?
+  finalYear         Int?
+  finalRegistration String?
+  finalMileage      Int?
+  finalPrice        Decimal?
+  deposit           Decimal?
+  finalIsNew        Boolean?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  additionalProducts AdditionalProduct[]
+
+  @@index([contactId])
+  @@index([stage])
+}
+
+model AdditionalProduct {
+  id     String                @id @default(cuid())
+  dealId String
+  deal   Deal                  @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  type   AdditionalProductType
+  value  Decimal
+
+  @@index([dealId])
+}
+
+model ImportSession {
+  id          String   @id @default(cuid())
+  filename    String
+  headers     String
+  rawDataJson String
+  mappingJson String?
+  reportJson  String?
+  createdAt   DateTime @default(now())
+}
