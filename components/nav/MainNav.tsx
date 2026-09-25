@@ -49,6 +49,9 @@ function useMainNavOpen() {
 export function MainNav() {
   const [open, setOpen] = useMainNavOpen();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const pathname = usePathname();
+
+  if (pathname === "/login") return null;
 
   return (
     <>

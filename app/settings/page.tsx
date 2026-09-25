@@ -1,5 +1,8 @@
 import Link from "next/link";
-import { Palette } from "lucide-react";
+import { LogOut, Palette } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { logoutAction } from "@/lib/auth/actions";
+import { isAuthEnabled } from "@/lib/auth/session";
 
 export default function SettingsPage() {
   return (
@@ -26,6 +29,15 @@ export default function SettingsPage() {
           </Link>
         </li>
       </ul>
+
+      {isAuthEnabled() && (
+        <form action={logoutAction}>
+          <Button type="submit" variant="secondary">
+            <LogOut className="h-4 w-4" />
+            Log out
+          </Button>
+        </form>
+      )}
     </div>
   );
 }
