@@ -80,3 +80,24 @@ export async function logNextActionCompleted(
     },
   });
 }
+
+/**
+ * Auto-logs a sent reminder email (req 06/08). Called from
+ * sendDueReminders alongside stamping nextActionReminderSentAt, in the same
+ * `tx` — only ever called after the email has actually been sent.
+ */
+export async function logReminderSent(
+  db: Db,
+  dealId: string,
+  categoryLabel: string,
+  description: string,
+  dueAt: Date
+) {
+  await db.activityLog.create({
+    data: {
+      dealId,
+      type: "REMINDER_SENT",
+      note: `Reminder email sent: ${categoryLabel} — ${description} (due ${dueAt.toLocaleString()})`,
+    },
+  });
+}

@@ -19,6 +19,7 @@ export async function setNextAction(
       nextActionDescription: data.description,
       nextActionDueAt: data.dueAt,
       nextActionKind: "REGULAR",
+      nextActionReminderSentAt: null,
     },
   });
 }
@@ -46,6 +47,7 @@ export async function completeNextAction(dealId: string) {
         nextActionDescription: null,
         nextActionDueAt: null,
         nextActionKind: null,
+        nextActionReminderSentAt: null,
       },
     });
     await logNextActionCompleted(

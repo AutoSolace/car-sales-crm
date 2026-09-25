@@ -125,10 +125,11 @@ model Deal {
   additionalProducts AdditionalProduct[]
   activityLogs       ActivityLog[]
 
-  nextActionCategory    NextActionCategory?
-  nextActionDescription String?
-  nextActionDueAt       DateTime?
-  nextActionKind        NextActionKind?
+  nextActionCategory      NextActionCategory?
+  nextActionDescription   String?
+  nextActionDueAt         DateTime?
+  nextActionKind          NextActionKind?
+  nextActionReminderSentAt DateTime?
 
   @@index([contactId])
   @@index([stage])
