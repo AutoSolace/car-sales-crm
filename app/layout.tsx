@@ -3,6 +3,10 @@ import Script from "next/script";
 import { MainNav } from "@/components/nav/MainNav";
 import "./globals.css";
 
+// Every page reads live data from SQLite, which isn't available at build time
+// on Railway (the volume only mounts at runtime) — so render per request.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "AutoSolace CRM",
   description: "Contacts, deals, and follow-ups for a solo car salesperson.",
