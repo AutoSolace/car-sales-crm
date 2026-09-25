@@ -65,7 +65,7 @@ export default async function TodosPage() {
                   </td>
                   <td className="py-2 pr-4">
                     <form action={completeAction}>
-                      <Button type="submit" variant="ghost" size="sm">
+                      <Button type="submit" variant="secondary" size="sm">
                         Mark done
                       </Button>
                     </form>
