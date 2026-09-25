@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { NavSearch } from "@/components/nav/NavSearch";
 import {
   ChevronsLeft,
   ChevronsRight,
@@ -18,12 +17,6 @@ import {
 import { cn } from "@/lib/utils";
 
 const STORAGE_KEY = "car-crm-main-nav-open";
-
-type ContactOption = {
-  id: string;
-  firstName: string;
-  lastName: string | null;
-};
 
 const NAV_ITEMS = [
   { href: "/", icon: Kanban, label: "Pipeline" },
@@ -53,7 +46,7 @@ function useMainNavOpen() {
   return [open, setOpen] as const;
 }
 
-export function MainNav({ contacts = [] }: { contacts?: ContactOption[] }) {
+export function MainNav() {
   const [open, setOpen] = useMainNavOpen();
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -66,7 +59,7 @@ export function MainNav({ contacts = [] }: { contacts?: ContactOption[] }) {
           open ? "w-56" : "w-14",
         )}
       >
-        <RailBody open={open} onToggle={() => setOpen(!open)} contacts={contacts} />
+        <RailBody open={open} onToggle={() => setOpen(!open)} />
       </aside>
 
       {/* Mobile drawer — slides in from the left, dismisses on overlay click */}
@@ -91,7 +84,6 @@ export function MainNav({ contacts = [] }: { contacts?: ContactOption[] }) {
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <NavSearch contacts={contacts} onNavigate={() => setMobileOpen(false)} />
             <RailNav open onClose={() => setMobileOpen(false)} />
             <div className="border-t border-hairline p-2">
               <ThemeToggle block />
@@ -113,15 +105,7 @@ export function MainNav({ contacts = [] }: { contacts?: ContactOption[] }) {
   );
 }
 
-function RailBody({
-  open,
-  onToggle,
-  contacts,
-}: {
-  open: boolean;
-  onToggle: () => void;
-  contacts: ContactOption[];
-}) {
+function RailBody({ open, onToggle }: { open: boolean; onToggle: () => void }) {
   return (
     <>
       <div
@@ -155,8 +139,6 @@ function RailBody({
           </button>
         )}
       </div>
-
-      {open && <NavSearch contacts={contacts} />}
 
       <RailNav open={open} />
 

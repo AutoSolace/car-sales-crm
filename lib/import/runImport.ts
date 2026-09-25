@@ -196,8 +196,5 @@ export async function commitImportAction(
   });
 
   revalidatePath("/contacts");
-  // Nav search's contact list is fetched once in the root layout — revalidate
-  // it as a layout so bulk-imported contacts show up in search everywhere.
-  revalidatePath("/", "layout");
   redirect(`/contacts/import/result?session=${sessionId}`);
 }
