@@ -164,6 +164,17 @@ export async function setBoardOutcome(
           outcome === "YES" && commissionReceived
             ? commissionReceived
             : deal.commissionReceived,
+        // req 10: a pending Stalled reminder is auto-cancelled the instant
+        // the deal reaches Completed/Lost.
+        ...(deal.nextActionKind === "STALLED"
+          ? {
+              nextActionCategory: null,
+              nextActionDescription: null,
+              nextActionDueAt: null,
+              nextActionKind: null,
+              nextActionReminderSentAt: null,
+            }
+          : {}),
       },
     });
     await logStageChange(
@@ -223,6 +234,9 @@ export async function updateDeal(id: string, input: DealInput) {
       : existing.lostAt;
 
   const newStage = deriveStageFromOutcomes(data);
+  const justReachedCompletedLost =
+    existing.completedLostOutcome === "PENDING" &&
+    data.completedLostOutcome !== "PENDING";
 
   return prisma.$transaction(async (tx) => {
     await tx.additionalProduct.deleteMany({ where: { dealId: id } });
@@ -239,6 +253,17 @@ export async function updateDeal(id: string, input: DealInput) {
             value: p.value,
           })),
         },
+        // req 10: a pending Stalled reminder is auto-cancelled the instant
+        // the deal reaches Completed/Lost.
+        ...(justReachedCompletedLost && existing.nextActionKind === "STALLED"
+          ? {
+              nextActionCategory: null,
+              nextActionDescription: null,
+              nextActionDueAt: null,
+              nextActionKind: null,
+              nextActionReminderSentAt: null,
+            }
+          : {}),
       },
     });
     await logStageChange(

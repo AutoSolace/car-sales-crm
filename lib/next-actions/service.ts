@@ -74,6 +74,7 @@ export async function listPendingNextActions() {
       nextActionCategory: true,
       nextActionDescription: true,
       nextActionDueAt: true,
+      nextActionKind: true,
       contact: { select: { firstName: true, lastName: true } },
     },
   });

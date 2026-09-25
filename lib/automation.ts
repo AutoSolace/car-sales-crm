@@ -23,6 +23,18 @@ export function isOverdue(
   return monthsSinceAnchor(date, now) >= thresholdMonths;
 }
 
+/**
+ * The date `thresholdMonths` after `date`, using the same
+ * AUTOMATION_START_DATE clamping as monthsSinceAnchor/isOverdue — so a
+ * reminder auto-scheduled from an old pre-launch date lands
+ * `thresholdMonths` after launch, not after the original (already long
+ * past) anchor date, consistent with how "is this overdue" is judged.
+ */
+export function addMonthsFromAnchor(date: Date, thresholdMonths: number): Date {
+  const anchor = date > AUTOMATION_START_DATE ? date : AUTOMATION_START_DATE;
+  return new Date(anchor.getTime() + thresholdMonths * MS_PER_MONTH);
+}
+
 const RECONTACT_THRESHOLD_MONTHS = 6;
 
 /**

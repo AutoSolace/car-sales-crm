@@ -1,19 +1,29 @@
-import type { NextActionCategory } from "@prisma/client";
+import type { NextActionCategory, NextActionKind } from "@prisma/client";
 import { Select } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { NEXT_ACTION_CATEGORY_LABELS } from "@/lib/types";
+import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { NEXT_ACTION_CATEGORY_LABELS, NEXT_ACTION_KIND_LABELS } from "@/lib/types";
 import {
   setNextActionAction,
   completeNextActionAction,
 } from "@/lib/next-actions/actions";
+
+// "signal" (amber) is already used for the Overdue badge shown alongside
+// this one, so Stalled uses "danger" (red) instead to stay visually
+// distinct when both appear together.
+const KIND_TONE: Record<NextActionKind, BadgeProps["tone"]> = {
+  REGULAR: "neutral",
+  RECONNECT: "accent",
+  STALLED: "danger",
+};
 
 type Deal = {
   id: string;
   nextActionCategory: NextActionCategory | null;
   nextActionDescription: string | null;
   nextActionDueAt: Date | null;
+  nextActionKind: NextActionKind | null;
 };
 
 // datetime-local inputs need "YYYY-MM-DDTHH:mm" — this trims the seconds
@@ -41,6 +51,11 @@ export default function NextAction({ deal }: { deal: Deal }) {
             <Badge tone="accent">
               {NEXT_ACTION_CATEGORY_LABELS[deal.nextActionCategory!]}
             </Badge>
+            {deal.nextActionKind && deal.nextActionKind !== "REGULAR" && (
+              <Badge tone={KIND_TONE[deal.nextActionKind]}>
+                {NEXT_ACTION_KIND_LABELS[deal.nextActionKind]}
+              </Badge>
+            )}
             <span className="text-sm">
               {deal.nextActionDueAt!.toLocaleString()}
             </span>

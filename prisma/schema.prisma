@@ -131,6 +131,9 @@ model Deal {
   nextActionKind          NextActionKind?
   nextActionReminderSentAt DateTime?
 
+  reconnect6moScheduledAt  DateTime?
+  reconnect18moScheduledAt DateTime?
+
   @@index([contactId])
   @@index([stage])
   @@index([nextActionDueAt])
