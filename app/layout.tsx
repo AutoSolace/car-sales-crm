@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { MainNav } from "@/components/nav/MainNav";
+import { listContactNames } from "@/lib/contacts/service";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -8,7 +9,9 @@ export const metadata: Metadata = {
   description: "Contacts, deals, and follow-ups for a solo car salesperson.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const contacts = await listContactNames();
+
   return (
     <html lang="en" className="h-full antialiased">
       <head>
@@ -40,7 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-full">
         <div className="flex min-h-screen bg-page text-ink-body">
-          <MainNav />
+          <MainNav contacts={contacts} />
           <main className="min-w-0 flex-1 px-6 py-8 sm:px-10">
             <div className="mx-auto max-w-5xl">{children}</div>
           </main>

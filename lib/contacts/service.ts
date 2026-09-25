@@ -22,6 +22,18 @@ export async function listContacts(query?: string) {
   });
 }
 
+/**
+ * Minimal name-only list for the global nav search (req 13) — deliberately
+ * lighter than listContacts(), which joins in deal outcome data that the
+ * nav has no use for and would otherwise load on every single page.
+ */
+export async function listContactNames() {
+  return prisma.contact.findMany({
+    select: { id: true, firstName: true, lastName: true },
+    orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
+  });
+}
+
 export async function getContactWithDeals(id: string) {
   return prisma.contact.findUnique({
     where: { id },
