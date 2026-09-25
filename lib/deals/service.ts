@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/db/client";
 import type { DealStage } from "@prisma/client";
-import { DEAL_STAGE_ORDER } from "@/lib/types";
+import { DEAL_STAGE_ORDER, DEAL_STAGE_LABELS } from "@/lib/types";
 import { dealInputSchema, type DealInput } from "./validation";
+import { logStageChange } from "@/lib/activity-log/service";
 
 /**
  * Setting an outcome (Yes/No) on the deal form moves the deal to that
@@ -103,7 +104,15 @@ export async function moveDealStage(id: string, targetStage: DealStage) {
     data.lostAt = null;
   }
 
-  await prisma.deal.update({ where: { id }, data });
+  await prisma.$transaction(async (tx) => {
+    await tx.deal.update({ where: { id }, data });
+    await logStageChange(
+      tx,
+      id,
+      DEAL_STAGE_LABELS[deal.stage],
+      DEAL_STAGE_LABELS[targetStage]
+    );
+  });
   return { ok: true } as const;
 }
 
@@ -126,26 +135,44 @@ export async function setBoardOutcome(
   if (!check.ok) return check;
 
   if (targetStage === "PROPOSAL_ACCEPTED") {
-    await prisma.deal.update({
-      where: { id },
-      data: { stage: "PROPOSAL_ACCEPTED", proposalAcceptedOutcome: outcome },
+    await prisma.$transaction(async (tx) => {
+      await tx.deal.update({
+        where: { id },
+        data: { stage: "PROPOSAL_ACCEPTED", proposalAcceptedOutcome: outcome },
+      });
+      await logStageChange(
+        tx,
+        id,
+        DEAL_STAGE_LABELS[deal.stage],
+        DEAL_STAGE_LABELS["PROPOSAL_ACCEPTED"],
+        outcome === "YES" ? "Accepted" : "Rejected"
+      );
     });
     return { ok: true } as const;
   }
 
   const now = new Date();
-  await prisma.deal.update({
-    where: { id },
-    data: {
-      stage: "COMPLETED_LOST",
-      completedLostOutcome: outcome,
-      completedAt: outcome === "YES" ? (deal.completedAt ?? now) : deal.completedAt,
-      lostAt: outcome === "NO" ? (deal.lostAt ?? now) : deal.lostAt,
-      commissionReceived:
-        outcome === "YES" && commissionReceived
-          ? commissionReceived
-          : deal.commissionReceived,
-    },
+  await prisma.$transaction(async (tx) => {
+    await tx.deal.update({
+      where: { id },
+      data: {
+        stage: "COMPLETED_LOST",
+        completedLostOutcome: outcome,
+        completedAt: outcome === "YES" ? (deal.completedAt ?? now) : deal.completedAt,
+        lostAt: outcome === "NO" ? (deal.lostAt ?? now) : deal.lostAt,
+        commissionReceived:
+          outcome === "YES" && commissionReceived
+            ? commissionReceived
+            : deal.commissionReceived,
+      },
+    });
+    await logStageChange(
+      tx,
+      id,
+      DEAL_STAGE_LABELS[deal.stage],
+      DEAL_STAGE_LABELS["COMPLETED_LOST"],
+      outcome === "YES" ? "Won" : "Lost"
+    );
   });
   return { ok: true } as const;
 }
@@ -195,13 +222,15 @@ export async function updateDeal(id: string, input: DealInput) {
       ? new Date()
       : existing.lostAt;
 
+  const newStage = deriveStageFromOutcomes(data);
+
   return prisma.$transaction(async (tx) => {
     await tx.additionalProduct.deleteMany({ where: { dealId: id } });
-    return tx.deal.update({
+    const updated = await tx.deal.update({
       where: { id },
       data: {
         ...dealFields,
-        stage: deriveStageFromOutcomes(data),
+        stage: newStage,
         completedAt,
         lostAt,
         additionalProducts: {
@@ -212,6 +241,13 @@ export async function updateDeal(id: string, input: DealInput) {
         },
       },
     });
+    await logStageChange(
+      tx,
+      id,
+      DEAL_STAGE_LABELS[existing.stage],
+      DEAL_STAGE_LABELS[newStage]
+    );
+    return updated;
   });
 }
 

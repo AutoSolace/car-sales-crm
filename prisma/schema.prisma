@@ -46,6 +46,13 @@ enum AdditionalProductType {
   SHINE_PROTECT_2YR
 }
 
+enum ActivityLogType {
+  STAGE_CHANGE
+  CALL
+  NOTE
+  REMINDER_SENT
+}
+
 model Contact {
   id                     String                   @id @default(cuid())
   firstName              String
@@ -97,6 +104,7 @@ model Deal {
   updatedAt DateTime @updatedAt
 
   additionalProducts AdditionalProduct[]
+  activityLogs       ActivityLog[]
 
   @@index([contactId])
   @@index([stage])
@@ -108,6 +116,18 @@ model AdditionalProduct {
   deal   Deal                  @relation(fields: [dealId], references: [id], onDelete: Cascade)
   type   AdditionalProductType
   value  Decimal
+
+  @@index([dealId])
+}
+
+model ActivityLog {
+  id        String          @id @default(cuid())
+  dealId    String
+  deal      Deal            @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  type      ActivityLogType
+  note      String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
 
   @@index([dealId])
 }

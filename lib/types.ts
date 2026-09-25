@@ -4,6 +4,7 @@ import type {
   DealStage,
   Outcome,
   AdditionalProductType,
+  ActivityLogType,
 } from "@prisma/client";
 
 export const LEAD_SOURCE_LABELS: Record<LeadSource, string> = {
@@ -58,6 +59,13 @@ export const ADDITIONAL_PRODUCT_TYPE_LABELS: Record<
   WARRANTY_3YR: "3 Year Warranty",
   SHINE_PROTECT_1YR: "Shine Protect 1 Year",
   SHINE_PROTECT_2YR: "Shine Protect 2 Year",
+};
+
+export const ACTIVITY_LOG_TYPE_LABELS: Record<ActivityLogType, string> = {
+  STAGE_CHANGE: "Stage change",
+  CALL: "Call",
+  NOTE: "Note",
+  REMINDER_SENT: "Reminder sent",
 };
 
 export const CONTACT_IMPORT_FIELDS = [
