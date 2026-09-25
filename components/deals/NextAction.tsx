@@ -73,20 +73,22 @@ export default function NextAction({ deal }: { deal: Deal }) {
           </Select>
         </div>
         <div>
-          <label htmlFor="next-action-description">Description</label>
+          <label htmlFor="next-action-description">Description *</label>
           <Input
             id="next-action-description"
             name="description"
+            required
             defaultValue={deal.nextActionDescription ?? ""}
             placeholder="What needs doing?"
           />
         </div>
         <div>
-          <label htmlFor="next-action-due">Due date/time</label>
+          <label htmlFor="next-action-due">Due date/time *</label>
           <Input
             id="next-action-due"
             name="dueAt"
             type="datetime-local"
+            required
             defaultValue={
               deal.nextActionDueAt
                 ? toDatetimeLocalValue(deal.nextActionDueAt)
