@@ -15,6 +15,7 @@ const TYPE_TONE: Record<ActivityLogType, BadgeProps["tone"]> = {
   CALL: "neutral",
   NOTE: "muted",
   REMINDER_SENT: "signal",
+  NEXT_ACTION_COMPLETED: "success",
 };
 
 type Entry = {

@@ -12,6 +12,7 @@ import { DataTable, DataRow } from "@/components/ui/data-table";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import type { Outcome } from "@prisma/client";
 import ActivityLog from "@/components/deals/ActivityLog";
+import NextAction from "@/components/deals/NextAction";
 
 const OUTCOME_TONE: Record<Outcome, BadgeProps["tone"]> = {
   PENDING: "muted",
@@ -113,6 +114,8 @@ export default async function DealDetailPage({
           </ul>
         )}
       </div>
+
+      <NextAction deal={deal} />
 
       <ActivityLog dealId={deal.id} />
     </div>

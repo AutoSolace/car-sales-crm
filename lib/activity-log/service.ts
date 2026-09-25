@@ -59,3 +59,24 @@ export async function logStageChange(
     data: { dealId, type: "STAGE_CHANGE", note },
   });
 }
+
+/**
+ * Auto-logs a completed next action (req 07). Called from
+ * completeNextAction alongside nulling the deal's next-action fields, in
+ * the same `tx` so both commit together.
+ */
+export async function logNextActionCompleted(
+  db: Db,
+  dealId: string,
+  categoryLabel: string,
+  description: string,
+  dueAt: Date
+) {
+  await db.activityLog.create({
+    data: {
+      dealId,
+      type: "NEXT_ACTION_COMPLETED",
+      note: `Completed: ${categoryLabel} — ${description} (was due ${dueAt.toLocaleString()})`,
+    },
+  });
+}

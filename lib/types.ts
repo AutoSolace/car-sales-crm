@@ -5,6 +5,7 @@ import type {
   Outcome,
   AdditionalProductType,
   ActivityLogType,
+  NextActionCategory,
 } from "@prisma/client";
 
 export const LEAD_SOURCE_LABELS: Record<LeadSource, string> = {
@@ -66,6 +67,15 @@ export const ACTIVITY_LOG_TYPE_LABELS: Record<ActivityLogType, string> = {
   CALL: "Call",
   NOTE: "Note",
   REMINDER_SENT: "Reminder sent",
+  NEXT_ACTION_COMPLETED: "Next action completed",
+};
+
+export const NEXT_ACTION_CATEGORY_LABELS: Record<NextActionCategory, string> = {
+  CALL: "Call",
+  EMAIL: "Email",
+  MEETING: "Meeting",
+  VIEWING: "Viewing",
+  OTHER: "Other",
 };
 
 export const CONTACT_IMPORT_FIELDS = [

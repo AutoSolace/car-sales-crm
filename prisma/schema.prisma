@@ -51,6 +51,25 @@ enum ActivityLogType {
   CALL
   NOTE
   REMINDER_SENT
+  NEXT_ACTION_COMPLETED
+}
+
+enum NextActionCategory {
+  CALL
+  EMAIL
+  MEETING
+  VIEWING
+  OTHER
+}
+
+// REGULAR is the only kind produced today (M4). RECONNECT/STALLED are a
+// forward-compat stub for M6 (req 09/10), which reuses these same next-
+// action fields for auto-scheduled reminders that need to appear in the
+// same cross-deal to-do list (req 11).
+enum NextActionKind {
+  REGULAR
+  RECONNECT
+  STALLED
 }
 
 model Contact {
@@ -106,8 +125,14 @@ model Deal {
   additionalProducts AdditionalProduct[]
   activityLogs       ActivityLog[]
 
+  nextActionCategory    NextActionCategory?
+  nextActionDescription String?
+  nextActionDueAt       DateTime?
+  nextActionKind        NextActionKind?
+
   @@index([contactId])
   @@index([stage])
+  @@index([nextActionDueAt])
 }
 
 model AdditionalProduct {

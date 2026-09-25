@@ -8,6 +8,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Kanban,
+  ListChecks,
   Menu,
   Settings,
   Users,
@@ -20,6 +21,7 @@ const STORAGE_KEY = "car-crm-main-nav-open";
 const NAV_ITEMS = [
   { href: "/", icon: Kanban, label: "Pipeline" },
   { href: "/contacts", icon: Users, label: "Contacts" },
+  { href: "/todos", icon: ListChecks, label: "To-do" },
   { href: "/settings", icon: Settings, label: "Settings" },
 ];
 
